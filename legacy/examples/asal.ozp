@@ -1,0 +1,20 @@
+degisken n = 2
+dongu n < 100000:
+    degisken asal = 1
+    degisken i = 2
+    
+    degisken sinir = n / 2
+    dongu i <= sinir:
+        degisken kalan = n % i
+        ise kalan == 0:
+            asal = 0
+            i = n
+        son
+        i = i + 1
+    son
+
+    ise asal == 1:
+        yazdir n
+    son
+    n = n + 1
+son

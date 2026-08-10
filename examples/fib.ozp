@@ -1,0 +1,9 @@
+islev fib(n: sayi) -> sayi:
+    ise n < 2.0:
+        don n
+    son
+    don fib(n - 1.0) + fib(n - 2.0)
+son
+
+degisken sonuc = fib(35.0)
+yazdir sonuc

@@ -1,0 +1,31 @@
+yazdir "--- LOG VERI ANALIZCISI ---"
+degisken icerik = dosya_oku("examples/sunucu.log")
+degisken satirlar = icerik.parcala("\n")
+degisken satir_sayisi = satirlar.uzunluk()
+
+yazdir "Toplam islenen satir: " + satir_sayisi
+
+degisken hata_sayisi = 0
+degisken uyari_sayisi = 0
+degisken bilgi_sayisi = 0
+
+degisken i = 0
+dongu i < satir_sayisi:
+    degisken satir = satirlar.al(i)
+    ise satir.iceriyor_mu("HATA:") > 0:
+        hata_sayisi = hata_sayisi + 1
+    son
+    ise satir.iceriyor_mu("UYARI:") > 0:
+        uyari_sayisi = uyari_sayisi + 1
+    son
+    ise satir.iceriyor_mu("BILGI:") > 0:
+        bilgi_sayisi = bilgi_sayisi + 1
+    son
+    i = i + 1
+son
+
+yazdir "---------------------------"
+yazdir "HATA Sayisi   : " + hata_sayisi
+yazdir "UYARI Sayisi  : " + uyari_sayisi
+yazdir "BILGI Sayisi  : " + bilgi_sayisi
+yazdir "---------------------------"

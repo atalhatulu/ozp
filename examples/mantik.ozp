@@ -1,0 +1,4 @@
+degisken hiz = 120
+ise hiz > 100:
+    yazdir hiz
+son

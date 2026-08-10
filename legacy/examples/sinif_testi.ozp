@@ -1,0 +1,27 @@
+yazdir "=== OZ+ SINIF (OOP) TESTI ==="
+
+sinif Araba:
+    metin marka
+    metin model
+    degisken hiz
+son
+
+yeni Araba benimArabam
+benimArabam.marka = "Tesla"
+benimArabam.model = "Model S"
+benimArabam.hiz = 250
+
+yazdir "Araba Markasi:"
+metin arb_marka = benimArabam.marka
+yazdir arb_marka
+
+yazdir "Araba Modeli:"
+metin arb_model = benimArabam.model
+yazdir arb_model
+
+yazdir "Maksimum Hiz:"
+degisken arb_hiz = benimArabam.hiz
+yazdir arb_hiz
+
+yazdir "---"
+yazdir "Nesne Yonelimli Programlama (OOP) Basariyla Calisti!"

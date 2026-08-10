@@ -1,0 +1,13 @@
+degisken n = 6
+degisken sonuc = 1
+
+yazdir "Faktoriyel hesaplanacak sayi:"
+yazdir n
+
+dongu n > 0:
+    sonuc = sonuc * n
+    n = n - 1
+son
+
+yazdir "Sonuc:"
+yazdir sonuc

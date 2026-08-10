@@ -1,0 +1,18 @@
+// 1. Tip kontrolü ve Metin fonksiyonları
+degisken yazi = "Merhaba Dunya"
+yazdir tip(yazi)
+yazdir yazi.buyut()
+yazdir yazi.kucult()
+
+degisken kelimeler = yazi.parcala(" ")
+yazdir kelimeler
+
+// 2. Rastgele
+degisken r = rastgele()
+yazdir "Rastgele (0-1 arasi): " + r
+
+// 3. Dosya I/O
+degisken veri = "Bu yazi bir dosyaya yazildi!"
+dosya_yaz("test_io.txt", veri)
+degisken okunan = dosya_oku("test_io.txt")
+yazdir "Dosyadan okunan: " + okunan

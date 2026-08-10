@@ -1,0 +1,9 @@
+islev iterasyon_testi() -> sayi:
+    degisken idx = 0
+    dongu idx < 10000000:
+        idx = idx + 1
+    son
+    don 0.0
+son
+
+iterasyon_testi()

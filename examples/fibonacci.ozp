@@ -1,0 +1,16 @@
+islev fib(n):
+    ise n < 2:
+        don n
+    son
+    don fib(n-1) + fib(n-2)
+son
+
+yazdir "Fibonacci(35) hesaplaniyor..."
+degisken baslangic = zaman()
+degisken sonuc = fib(35)
+yazdir sonuc
+degisken bitis = zaman()
+degisken fark = bitis - baslangic
+
+yazdir "Sure (saniye):"
+yazdir fark

@@ -1,0 +1,16 @@
+yazdir "Fibonacci(35) hesaplaniyor... tipli"
+
+islev fib(n: sayi) -> sayi:
+    ise n < 2:
+        don n
+    son
+    don fib(n-1) + fib(n-2)
+son
+
+degisken baslangic = zaman()
+degisken sonuc = fib(35)
+degisken bitis = zaman()
+
+yazdir sonuc
+yazdir "Sure (saniye):"
+yazdir (bitis - baslangic)

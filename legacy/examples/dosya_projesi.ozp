@@ -1,0 +1,18 @@
+yazdir "=== OZ+ DOSYA VE DIZI PROJESI ==="
+
+yazdir "1. Dizi Testi:"
+dizi notlar[3]
+notlar[0] = 85
+notlar[1] = 90
+notlar[2] = 100
+
+yazdir "Ilk ogrencinin notu:"
+yazdir notlar[0]
+
+
+yazdir "2. Dosya Yazma ve Okuma Testi:"
+dosya_yaz("oz_test.txt", "OZ+ Programlama Dili Cok Hizli!\nBu dosya otomatik uretildi.")
+
+dosya_oku("oz_test.txt")
+
+yazdir "Program Tamamlandi."

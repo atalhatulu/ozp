@@ -1,0 +1,12 @@
+islev test():
+    degisken i = 0
+    dongu i < 10000000:
+        i = i + 1
+    son
+son
+
+degisken baslangic = zaman()
+test()
+degisken bitis = zaman()
+yazdir "10 Milyon Dongu Oz (VM Lokal) Suresi:"
+yazdir (bitis - baslangic)

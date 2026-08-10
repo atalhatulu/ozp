@@ -1,0 +1,53 @@
+yazdir "--- OZ+ MINI RPG TEST ---"
+
+// Oyun Sistemi Sınıfı
+sinif Karakter:
+    degisken isim = "Kahraman"
+    degisken can = 100
+    degisken saldiri = 20
+
+    islev tanit(kendisi):
+        yazdir kendisi.isim + " savasa katildi! Can: " + kendisi.can
+    son
+
+    islev hasar_al(kendisi, miktar):
+        kendisi.can = kendisi.can - miktar
+        yazdir kendisi.isim + " " + miktar + " hasar aldi!"
+        ise kendisi.can < 1:
+            yazdir kendisi.isim + " oldu!"
+        degilse:
+            yazdir "Kalan can: " + kendisi.can
+        son
+    son
+son
+
+// Oyun basliyor
+degisken oyuncu = yeni Karakter()
+oyuncu.isim = "Savasci Oz"
+oyuncu.tanit()
+
+degisken canavar = yeni Karakter()
+canavar.isim = "Ejderha"
+canavar.can = 200
+canavar.saldiri = 30
+canavar.tanit()
+
+yazdir "Savas basliyor!"
+
+her tur icinde [1, 2, 3]:
+    yazdir "--- Tur: " + tur + " ---"
+    
+    // Canavar saldiriyor
+    oyuncu.hasar_al(canavar.saldiri)
+
+    // Oyuncu karsilik veriyor, kritik vurus (rastgele)
+    degisken kritik = rastgele()
+    ise kritik > 0.5:
+        yazdir "Kritik vurus!"
+        canavar.hasar_al(oyuncu.saldiri * 2)
+    degilse:
+        canavar.hasar_al(oyuncu.saldiri)
+    son
+son
+
+yazdir "Savas bitti. Kazanan hayatta kalandir!"

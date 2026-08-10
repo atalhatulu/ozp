@@ -1,0 +1,8 @@
+dahil_et "kutuphane.ozp"
+
+yazdir "Ana dosya calisiyor."
+selamlama_yap()
+
+degisken g = yeni Geometri()
+degisken sonuc = g.hesapla_alan(5, 10)
+yazdir "Sonuc: " + sonuc

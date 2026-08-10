@@ -1,0 +1,28 @@
+islev topla(degisken a, degisken b):
+    don a + b
+son
+
+islev cikar(degisken a, degisken b):
+    don a - b
+son
+
+yazdir "=== OZ+ HESAP MAKINESI ==="
+yazdir "Birinci sayiyi girin:"
+degisken sayi1
+girdi al sayi1
+
+yazdir "Ikinci sayiyi girin:"
+degisken sayi2
+girdi al sayi2
+
+yazdir "Toplam:"
+degisken sonuc = topla(sayi1, sayi2)
+yazdir sonuc
+
+yazdir "Fark:"
+degisken sonuc2 = cikar(sayi1, sayi2)
+yazdir sonuc2
+
+yazdir "Çarpım:"
+degisken sonuc = carp(sayi1, sayi2)
+yazdir sonuc

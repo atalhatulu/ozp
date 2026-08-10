@@ -1,0 +1,5 @@
+degisken x = 0
+dongu x < 10000000:
+    x = x + 1
+    yazdir x
+son

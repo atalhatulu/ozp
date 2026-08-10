@@ -1,0 +1,11 @@
+// Modul dosyasi
+sinif Geometri:
+    islev hesapla_alan(kendisi, genislik, yukseklik):
+        yazdir "Alan hesaplaniyor..."
+        don genislik * yukseklik
+    son
+son
+
+islev selamlama_yap():
+    yazdir "Geometri modulunden selamlar!"
+son

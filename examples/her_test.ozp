@@ -1,0 +1,11 @@
+degisken liste = [10, 20, 30, 40]
+degisken toplam = 0
+
+yazdir "Dongu basliyor..."
+her sayi icinde liste:
+    toplam = toplam + sayi
+    yazdir "Sayi: " + sayi
+son
+
+yazdir "Toplam:"
+yazdir toplam

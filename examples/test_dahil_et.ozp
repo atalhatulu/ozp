@@ -1,0 +1,7 @@
+dahil_et "examples/matematik.ozp"
+
+yazdir "10 + 20 ="
+yazdir topla(10, 20)
+
+yazdir "5'in karesi ="
+yazdir kare(5)

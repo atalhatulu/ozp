@@ -1,0 +1,16 @@
+yazdir "=== ASAMA 2 TESTI ==="
+
+metin isim = "OZ+ Dili"
+ondalik pi = 3.1415
+degisken r = 5
+
+// Parantez ve Mantik Testi
+ise (r > 3) ve (pi > 3.0):
+    yazdir isim
+    yazdir "Hesaplama yapiliyor..."
+    
+    ondalik cevre = 2.0 * pi * r
+    yazdir cevre
+degilse:
+    yazdir "Sart saglanmadi!"
+son

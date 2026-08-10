@@ -1,0 +1,60 @@
+yazdir "===================================="
+yazdir "       OZ+ BILGI YARISMASI          "
+yazdir "===================================="
+yazdir "Kurallar: Cevaplarinizi sadece A, B veya C olarak buyuk harfle yazin."
+yazdir "Hazirsaniz basliyoruz..."
+yazdir "------------------------------------"
+
+// Dogru ve yanlis cevaplari yorumlayacak bir sozluk altyapisi kuruyoruz.
+// Boylece arka planda string kiyaslama islemlerini O(1) hizinda C seviyesinde cozmus oluyoruz!
+sozluk cevap_motoru = sozluk_olustur()
+sozluk_ekle(cevap_motoru, "A", "Yanlis! Cok yaklastiniz ama degil.")
+sozluk_ekle(cevap_motoru, "B", "MUKEMMEL! Dogru cevap.")
+sozluk_ekle(cevap_motoru, "C", "Maalesef yanlis.")
+
+sozluk cevap_motoru2 = sozluk_olustur()
+sozluk_ekle(cevap_motoru2, "A", "HARIKA! Nokta atisi bildiniz.")
+sozluk_ekle(cevap_motoru2, "B", "Yanlis! O dilin yasi biraz daha buyuk :)")
+sozluk_ekle(cevap_motoru2, "C", "Yanlis! Daha modern bir seyler dusunun.")
+
+sozluk cevap_motoru3 = sozluk_olustur()
+sozluk_ekle(cevap_motoru3, "A", "Ooo cok yanlis!")
+sozluk_ekle(cevap_motoru3, "B", "Maalesef!")
+sozluk_ekle(cevap_motoru3, "C", "TEBRIKLER! Kesinlikle haklisin.")
+
+// --- 1. SORU ---
+yazdir "SORU 1: OZ+ programlama dili arka planda hangi muthis guclu dile donusturulur?"
+yazdir "A) C++"
+yazdir "B) C"
+yazdir "C) Python"
+
+yazdir "Cevabiniz:"
+girdi soru1_cevap al
+metin sonuc1 = sozluk_getir(cevap_motoru, soru1_cevap)
+yazdir sonuc1
+yazdir "------------------------------------"
+
+// --- 2. SORU ---
+yazdir "SORU 2: OZ+ dilinde yazilan kodlari, VS Code uzerinde renklendiren sey nedir?"
+yazdir "A) Bizim yazdigimiz ozel Extension (Eklenti)"
+yazdir "B) Python Eklentisi"
+yazdir "C) C++ Compiler"
+
+yazdir "Cevabiniz:"
+girdi soru2_cevap al
+metin sonuc2 = sozluk_getir(cevap_motoru2, soru2_cevap)
+yazdir sonuc2
+yazdir "------------------------------------"
+
+// --- 3. SORU ---
+yazdir "SORU 3: Hafizada olusan kullanilmayan degiskenleri kim siler?"
+yazdir "A) Benim elle silmem lazim"
+yazdir "B) Isletim Sistemi"
+yazdir "C) OZ+ Cop Toplayicisi (Garbage Collector)"
+
+yazdir "Cevabiniz:"
+girdi soru3_cevap al
+metin sonuc3 = sozluk_getir(cevap_motoru3, soru3_cevap)
+yazdir sonuc3
+yazdir "===================================="
+yazdir "Yarisma Tamamlandi! Gorusmek Uzere!"

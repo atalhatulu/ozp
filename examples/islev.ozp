@@ -1,0 +1,19 @@
+islev topla(a, b)
+    degisken sonuc = a + b
+    don sonuc
+son
+
+yazdir "Fonksiyon testi basliyor (toplama):"
+degisken x = topla(15, 25)
+yazdir "Toplam Sonuc:"
+yazdir x
+
+islev ozyineli_say(n)
+    yazdir n
+    ise n > 0:
+        ozyineli_say(n - 1)
+    son
+son
+
+yazdir "Recursive (Ozyineli) Geri Sayim:"
+ozyineli_say(3)

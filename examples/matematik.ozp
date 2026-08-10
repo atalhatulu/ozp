@@ -1,0 +1,7 @@
+islev topla(a, b):
+    don a + b
+son
+
+islev kare(a):
+    don a * a
+son

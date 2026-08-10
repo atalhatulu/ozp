@@ -1,0 +1,21 @@
+yazdir "--- BUBBLE SORT ALGORITMASI ---"
+degisken liste = [8, 3, 5, 1, 9, 2, 7, 4, 6]
+degisken uzunluk = liste.uzunluk()
+yazdir "Sirasiz Liste: " + liste
+
+degisken i = 0
+dongu i < uzunluk:
+    degisken j = 0
+    dongu j < (uzunluk - i - 1):
+        degisken a = liste.al(j)
+        degisken b = liste.al(j + 1)
+        ise a > b:
+            liste.degistir(j, b)
+            liste.degistir(j + 1, a)
+        son
+        j = j + 1
+    son
+    i = i + 1
+son
+
+yazdir "Sirali Liste: " + liste

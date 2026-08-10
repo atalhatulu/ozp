@@ -1,0 +1,6 @@
+yazdir "Bu bir hata testidir."
+
+// Tanimlanmamis degisken kullanimi
+yazdir olmayan_degisken
+
+yazdir "Bunu yazdirmamali cunku derleme duracak."

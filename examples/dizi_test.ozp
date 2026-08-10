@@ -1,0 +1,10 @@
+degisken liste = [1, 2, "merhaba", Dogru]
+yazdir liste
+
+degisken isim = "Oz Dili "
+degisken surum = 2.0
+degisken mesaj = isim + surum
+yazdir mesaj
+
+degisken sonuc = liste + [mesaj]
+yazdir sonuc

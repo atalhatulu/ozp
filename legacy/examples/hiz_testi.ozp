@@ -1,0 +1,10 @@
+yazdir "Hiz Testi Basliyor (1'den 1 Milyara Kadar Sayma)..."
+zaman_baslat
+
+degisken i = 1
+dongu i <= 1000000000:
+    i = i + 1
+son
+
+zaman_bitir
+yazdir "Test Tamamlandi!"

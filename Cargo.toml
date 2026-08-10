@@ -1,0 +1,14 @@
+[package]
+name = "ozc"
+version = "0.1.0"
+edition = "2021"
+description = "OZ+ programlama dilinin Rust derleyicisi — lexer + AST + C transpile"
+license = "MIT"
+
+[[bin]]
+name = "ozc"
+path = "src/main.rs"
+
+[profile.release]
+opt-level = 3
+lto = true

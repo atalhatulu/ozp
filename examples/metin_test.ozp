@@ -1,0 +1,7 @@
+degisken isim = "Dunya"
+degisken selam = "Merhaba " + isim + "!"
+yazdir selam
+
+ise 1 == 1:
+    yazdir "Matematik esitligi dogru."
+son

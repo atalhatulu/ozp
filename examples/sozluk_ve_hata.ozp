@@ -1,0 +1,37 @@
+yazdir "=== OZ+ SOZLUK VE HATA YAKALAMA TESTI ==="
+
+yazdir "1. Sozluk (Map) Testi:"
+sozluk ogrenci = sozluk_olustur()
+sozluk_ekle(ogrenci, "isim", "Ali Yilmaz")
+sozluk_ekle(ogrenci, "bolum", "Bilgisayar Muhendisligi")
+
+yazdir "Ogrencinin Ismi:"
+metin ogr_isim = sozluk_getir(ogrenci, "isim")
+yazdir ogr_isim
+
+yazdir "Ogrencinin Bolumu:"
+metin ogr_bolum = sozluk_getir(ogrenci, "bolum")
+yazdir ogr_bolum
+
+yazdir "---"
+yazdir "2. Hata Yakalama (Try/Catch) Testi:"
+
+dene:
+    yazdir "Tehlikeli islem deneniyor..."
+    hata_firlat "Sunucuya baglanilamadi!"
+    yazdir "Bu satir hic calismayacak."
+hata_yakala:
+    yazdir "Bir hata yakalandi ve program cokmedi!"
+    yazdir _oz_son_hata_mesaji
+son
+
+yazdir "---"
+yazdir "3. Kapsam (Scope) Testi:"
+ise 5 > 3:
+    degisken gecici_sayi = 42
+    yazdir "Blok icindeki gecici_sayi:"
+    yazdir gecici_sayi
+son
+// Eger yazdir gecici_sayi yazarsak, derleyici hata verecek cunku kapsam disinda.
+
+yazdir "Test Basariyla Tamamlandi!"

@@ -1,0 +1,27 @@
+yazdir "=== OZ+ TELEFON REHBERI ==="
+yazdir "Rehberimize hos geldiniz."
+yazdir "Cikmak ve programi sonlandirmak icin 'cikis' yazabilirsiniz."
+yazdir "---------------------------"
+
+// Rehberimizi bir sozluk (hashmap) kullanarak olusturuyoruz
+sozluk rehber = sozluk_olustur()
+sozluk_ekle(rehber, "Ahmet", "0555 123 45 67")
+sozluk_ekle(rehber, "Ayse", "0532 987 65 43")
+sozluk_ekle(rehber, "Mehmet", "0505 111 22 33")
+sozluk_ekle(rehber, "cikis", "CIKIS_ISTENDI")
+
+dongu 1 > 0:
+    yazdir "Kimin numarasini ariyorsunuz? (Ornek: Ayse)"
+    girdi aranan_kisi al
+    
+    metin sonuc = sozluk_getir(rehber, aranan_kisi)
+    
+    // Eger kisi sozlukte yoksa BULUNAMADI doner
+    // Fakat string kiyaslamasi (==) yapamadigimiz icin, sonucu ekrana basmakla yetiniyoruz!
+    yazdir "Kayitli Numara:"
+    yazdir sonuc
+    yazdir "---------------------------"
+    
+    // C programlarinda oldugu gibi break (kir) eklenebilir. 
+    // Ancak gercek bir uygulamada kullanici kendisi Ctrl+C ile cikacaktir.
+son

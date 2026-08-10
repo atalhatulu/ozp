@@ -1,0 +1,18 @@
+# Rust
+/target/
+**/*.rs.bk
+
+# Oz Dili AOT Derleyici Gecici Dosyalari
+build_ozp.rs
+ozp_run
+ozp_run.exe
+
+# Loglar ve ornek veriler
+*.log
+
+# IDE ve OS Dosyalari
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store

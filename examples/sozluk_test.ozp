@@ -1,0 +1,9 @@
+degisken kisi = {"isim": "Ali", "yas": 30}
+yazdir kisi
+
+kisi["isim"] = "Veli"
+kisi.yas = 31
+kisi.meslek = "Muhendis"
+
+yazdir kisi
+yazdir kisi.isim

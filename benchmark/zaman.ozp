@@ -1,0 +1,16 @@
+degisken i = 0
+degisken sinir = 2000000
+degisken toplam = 0
+
+degisken baslangic = zaman()
+
+dongu i < sinir:
+    toplam = toplam + i
+    i = i + 1
+son
+
+degisken bitis = zaman()
+degisken fark = bitis - baslangic
+
+yazdir "Dongu bitti! Gecen sure (saniye):"
+yazdir fark

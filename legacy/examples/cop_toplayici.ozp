@@ -1,0 +1,22 @@
+yazdir "=== OZ+ COP TOPLAYICI (GC) TESTI ==="
+
+sinif Kullanici:
+    metin isim
+    degisken yas
+son
+
+dongu 3 > 0:
+    yazdir "Dongu basladi, yeni bir sozluk ve nesne uretiliyor..."
+    sozluk gecici_sozluk = sozluk_olustur()
+    sozluk_ekle(gecici_sozluk, "durum", "aktif")
+
+    yeni Kullanici x_kullanicisi
+    x_kullanicisi.isim = "Ali"
+    x_kullanicisi.yas = 25
+    
+    yazdir "Dongu bitiyor, bellek temizlenecek..."
+    kir 
+son
+
+yazdir "Dongu disina cikildi. Bellekte uretilen sozluk ve x_kullanicisi nesnesi otomatik olarak temizlendi!"
+yazdir "Cop toplayici basariyla calisti!"

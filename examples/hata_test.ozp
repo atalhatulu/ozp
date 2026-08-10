@@ -1,0 +1,14 @@
+degisken liste = [10, 20, 30]
+yazdir liste.uzunluk()
+liste.ekle(40)
+yazdir liste
+
+dene
+    yazdir "Tehlikeli islem yapiliyor..."
+    hata_firlat "Sunucuya Baglanilamadi!"
+    yazdir "Bu satir asla calismayacak"
+yakala hata
+    yazdir "Sistem Cokmedi! Yakalanan Hata: " + hata
+son
+
+yazdir "Program basariyla tamamlandi."

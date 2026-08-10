@@ -1,0 +1,15 @@
+sinif Araba:
+    degisken marka = "Bilinmiyor"
+    degisken hiz = 0
+
+    islev hizlan(kendisi, miktar):
+        kendisi.hiz = kendisi.hiz + miktar
+        yazdir kendisi.marka + " hizlandi. Guncel hiz: "
+        yazdir kendisi.hiz
+    son
+son
+
+degisken arabam = yeni Araba()
+arabam.marka = "Ferrari"
+arabam.hizlan(50)
+arabam.hizlan(100)
