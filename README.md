@@ -13,7 +13,7 @@
 
 ## 🛠️ Kurulum ve Kullanım
 
-Oz+ dilini derlemek ve çalıştırmak için bilgisayarınızda **Rust (cargo)** yüklü olmalıdır.
+Oz+ dilini derlemek ve çalıştırmak için bilgisayarınızda **Rust araç zinciri — hem `cargo` hem de `rustc`** yüklü olmalıdır (AOT aşaması, üretilen Rust kodunu `rustc -O` ile derler).
 
 ```bash
 # Repo'yu indirin
@@ -23,6 +23,8 @@ cd ozp
 # Oz kodunuzu calistirin
 cargo run --bin ozc --release -- examples/bubble_sort.ozp
 ```
+
+> `ozc` derleyicisi kodunuzu Rust'a dönüştürüp `rustc` ile Native makine diline derler; programınız derlenmenin hemen ardından otomatik çalıştırılır. Sadece token/AST incelemesi için debug bayrakları mevcuttur: `cargo run --bin ozc --release -- --tokens dosya.ozp` ve `--ast dosya.ozp`.
 
 ---
 
