@@ -12,6 +12,11 @@ pub struct Parser {
     in_islev_decl: bool,
     in_sinif_block: bool,
     sinif_adi: String,
+    // İlk derleme hatası (sessiz fallback yerine gerçek hata raporlama).
+    // İfade ayrıştırma imzalarını Result'a çevirip tüm caller'ları sarsmak
+    // yerine, alınabilir olmayan token/sayı durumlarını burada kaydederiz;
+    // `parse` en sonda bu hatayı Err olarak döndürür.
+    hata: Option<CompileHata>,
 }
 
 impl Parser {
@@ -23,6 +28,20 @@ impl Parser {
             in_islev_decl: false,
             in_sinif_block: false,
             sinif_adi: String::new(),
+            hata: None,
+        }
+    }
+
+    /// Ayrıştırma hatasını kaydeder (ilk hata korunur).
+    fn hata_kaydet(&mut self, kanit: &str, mesaj: String) {
+        if self.hata.is_none() {
+            let satir = self.peek().satir;
+            let metin = if kanit.is_empty() {
+                mesaj
+            } else {
+                format!("{} — yakin: '{}'", mesaj, kanit)
+            };
+            self.hata = Some(CompileHata { satir, mesaj: metin });
         }
     }
 
@@ -125,7 +144,13 @@ impl Parser {
         match t.tip {
             TokenTip::SAYI => {
                 let deger = self.ilerle().deger;
-                Ifade::Sayi(deger.parse().unwrap_or(0.0))
+                match deger.parse::<f64>() {
+                    Ok(n) => Ifade::Sayi(n),
+                    Err(_) => {
+                        self.hata_kaydet(&deger, format!("Gecersiz sayi sabiti: '{}'.", deger));
+                        Ifade::Sayi(0.0)
+                    }
+                }
             }
             TokenTip::METIN => {
                 let deger = self.ilerle().deger;
@@ -264,7 +289,12 @@ impl Parser {
                 lhs
             }
             _ => {
-                // Bilinmeyen — boş değer ile devam et
+                // Bilinmeyen/beklenmeyen token → sessiz Sayi(0.0) yerine hata kaydet.
+                let kanit = self.peek().deger.clone();
+                let mesaj = format!(
+                    "Beklenmeyen ifade. Gecersiz token yuzunden ifade cozumlenemedi (istege bagli tip/hata suresi kodlari icin syntax kontrol edin)."
+                );
+                self.hata_kaydet(&kanit, mesaj);
                 let _ = self.ilerle();
                 Ifade::Sayi(0.0)
             }
@@ -689,7 +719,7 @@ impl Parser {
         komutlar
     }
 
-    pub fn parse_program(mut self) -> Program {
+    pub fn parse_program(&mut self) -> Program {
         let mut program = Program::default();
         loop {
             let t = self.peek();
@@ -713,8 +743,12 @@ impl Parser {
 }
 
 pub fn parse(tokens: &TokenDizisi) -> Result<Program, CompileHata> {
-    let parser = Parser::yeni(tokens);
-    Ok(parser.parse_program())
+    let mut parser = Parser::yeni(tokens);
+    let program = parser.parse_program();
+    if let Some(hata) = parser.hata.take() {
+        return Err(hata);
+    }
+    Ok(program)
 }
 
 #[derive(Debug)]
@@ -766,16 +800,27 @@ mod tests {
 
     #[test]
     fn ise_degilse() {
-        let p = parse_dosya(
-            "ise n == 1:\n    yazdir \"bir\"\ndegilse:\n    yazdir \"diger\"\nson\n",
-        );
+        let p =
+            parse_dosya("ise n == 1:\n    yazdir \"bir\"\ndegilse:\n    yazdir \"diger\"\nson\n");
         assert_eq!(p.komutlar.len(), 1);
         match &p.komutlar[0] {
             Komut::Ise { else_, then, .. } => {
-                assert!(else_.is_some());
+                assert_eq!(else_.as_ref().map(|e| e.len()).unwrap_or(0), 1);
                 assert_eq!(then.len(), 1);
             }
-            _ => panic!("beklenen: ise"),
+            _ => panic!("ise bekleniyordu"),
+        }
+    }
+
+    #[test]
+    fn gecersiz_ifade_hata_dondurur() {
+        // Sessiz Sayi(0.0) fallback yerine gerçek parse hatası.
+        let tokens = lexer::tokenize("degisken x = !!!\nyazdir x");
+        let sonuc = parse(&tokens);
+        assert!(sonuc.is_err(), "gecersiz ifade Err donmeli, got: {:?}", sonuc.is_ok());
+        if let Err(e) = sonuc {
+            assert!(e.satir > 0, "satir bilgisi olmali, got {}", e.satir);
+            assert!(e.mesaj.contains("Beklenmeyen"), "mesaj: {}", e.mesaj);
         }
     }
 }
