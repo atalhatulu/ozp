@@ -1,34 +1,52 @@
-# OZ+ Programlama Dili: Geliştirme Yol Haritası (20 Hedef)
+# OZ+ (ozp) — Geliştirme Hedefleri
 
-Bu belge, OZ+ dilini sıfırdan alıp dünya standartlarında bir programlama dili haline getirmek için izleyeceğimiz adımları içerir. Başardıkça kutucukları işaretleyeceğiz!
+**ozp**, Türkçe sözdizimine sahip, AOT (Ahead-of-Time) transpiler ile **Rust üzerinden native hızda** çalışan bir programlama dili derleyicisidir.
 
-## Aşama 1: Temel Dil Yapı Taşları (Tamamlandı)
-- [x] 1. Değişken tanımlama (`degisken`) ve Atama işlemleri
-- [x] 2. Temel Matematik İşlemleri (`+`, `-`, `*`, `/`, `%`)
-- [x] 3. Karşılaştırma ve Şart Blokları (`ise`, `<`, `>`, `==`)
-- [x] 4. Döngü Mekanizması (`dongu`) ve Ekrana Yazdırma (`yazdir`)
-- [x] 5. `degilse` (Else) blokları ve Temel Metin (String) yazdırma desteği
+> ⚠️ Eski `HEDEFLER.md`, C tabanlı `ozplus-lang` projesine aitti (20 maddelik yol haritası). O içerik `legacy/` klasörüne taşınmıştır. Bu dosya, mevcut **Rust derleyicisi `ozc`** için güncel hedefleri içerir.
 
-## Aşama 2: Mantık ve İfadeler (Tamamlandı)
-- [x] 6. Mantıksal Operatörler (`ve`, `veya`, `degil`)
-- [x] 7. Parantez ile İşlem Önceliği Desteği `(5 + 3) * 2`
-- [x] 8. Metin (String) Değişken Tanımlama `metin ad = "OZ"`
-- [x] 9. Ondalıklı Sayı (Float/Double) Desteği `ondalik pi = 3.14`
+## ✅ Tamamlanmış (Beta)
 
-## Aşama 3: Fonksiyonlar ve Veri Yapıları (Tamamlandı)
-- [x] 10. Fonksiyon (İşlev) Tanımlama ve Parametre Alma `islev topla(a, b):`
-- [x] 11. Fonksiyondan Değer Döndürme (`don a + b`)
-- [x] 12. Diziler (Listeler / Arrays) `dizi sayilar = [1, 2, 3]`
-- [x] 13. Kullanıcıdan Terminal Üzerinden Girdi Alma (`girdi al`)
+- Lexer: Türkçe keyword + token sistemi
+- Parser: Gerçek `Program(AST)` üretimi
+- Operatör önceliği (precedence) ve tüm ikili operatörlerin codegen'i
+- `degisken`, `metin`, `ondalik`, `dizi`, `sozluk`, `sabit`
+- `ise` / `degilse`, `dongu`, `her ... icinde`
+- `islev` + parametre tipi + `don`
+- `sinif` / `yeni` / metot / özellik (OOP)
+- `dene` / `hata_yakala` / `hata_firlat`
+- Dizi / sözlük işlemleri, `dahil_et` modül sistemi
+- Builtin stdlib: `dosya_oku`, `dosya_yaz`, `rastgele`, `tip`, metin/dizi metotları
+- AOT native derleme (`rustc -O`), `--tokens` / `--ast` debug bayrakları
+- Sembol tablosu + scope yönetimi
 
-## Aşama 4: İleri Seviye Özellikler (Tamamlandı)
-- [x] 14. Kapsam (Scope) Yönetimi (Sadece döngü/fonksiyon içinde yaşayan değişkenler)
-- [x] 15. Dosya İşlemleri (Bilgisayardaki metin dosyalarını okuma/yazma)
-- [x] 16. Sözlük / Anahtar-Değer (Dictionary/Map) Veri Tipleri
-- [x] 17. İleri Seviye Hata Yakalama (`dene: ... hata_yakala: ...`)
+## 🎯 Sıradaki Hedefler
 
-## Aşama 5: Profesyonel Ekosistem
-- [x] 18. Nesne Yönelimli Programlama (Class / Sınıf yapısı) `sinif Araba:`
-- [x] 19. Çöp Toplayıcı (Garbage Collector) Entegrasyonu
-- [x] 20. VS Code Extension (Eklenti) Geliştirme (Renklendirme ve hata denetimi)
-- [ ] 20. OZ+ için VS Code (Visual Studio Code) Renklendirme ve Otomatik Tamamlama Eklentisi!
+### Katman 1 — Derleyici temelini sağlamlaştır (v0.2, öncelikli)
+- [ ] **Gerçek hata yönetimi:** Parser'da `Sayi(0.0)` fallback kaldırılmalı; `Result<Ifade, CompileHata>` ile satır odaklı hata mesajları. `degisken x = !!!` → derlenme hatası vermeli.
+- [ ] **Tip çıkarımı:** `degisken isim = "Teha"` → `Metin`, `degisken x = 42` → `TamSayi`. Tipler: `Int, Float, String, Bool, Array<T>, Sozluk<K,V>, Function, Class, Object, Void`.
+- [ ] **Jenerik dizi/sözlük:** `dizi sayilar = [1,2,3]` → `Array<Int>`.
+- [ ] **`eger` (ternary)** ifadesinin codegen'i tamamlanmalı.
+- [ ] **`zaman` bug'ı:** `zaman_baslat`/`zaman_bitir` için üretilen Rust'ta `zaman()` fonksiyonu tanımlanmalı (şu an eksik → bazı örnekler derlenmiyor).
+
+### Katman 2 — Mimari (v0.3)
+- [ ] Semantic Analyzer katmanı (AST sonrası doğrulama)
+- [ ] AST'yi backend'den ayıran HIR katmanı
+- [ ] Gerçek module system (`import` / `export` / `private` / `public`)
+- [ ] `dahil_et` yol çözümleme düzeltmesi (göreli yol)
+
+### Katman 3 — Ekosistem
+- [ ] Rust `ozc` için güncel VS Code uzantısı (mevcut uzantı legacy C içindi)
+- [ ] LSP sunucusu
+- [ ] Paket yöneticisi
+
+## Test / Doğrulama Notu
+
+Parser'da 6 unit test vardır. Operatör değişiklikleri sonrası tüm `examples/*.ozp` regresyon koşusu önerilir:
+
+```bash
+cargo test --release --bin ozc
+```
+
+---
+
+*Geliştirici: teha & Antigravity (Google)*

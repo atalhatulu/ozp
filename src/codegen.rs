@@ -11,7 +11,7 @@ impl Transpiler {
 
     pub fn transpile(&mut self, program: &Program) -> Result<String, String> {
         self.rust_kodu.push_str("#[allow(warnings)]\n");
-        self.rust_kodu.push_str("use std::ops::{Add, Sub, Mul, Div};\n\n");
+        self.rust_kodu.push_str("use std::ops::{Add, Sub, Mul, Div, Rem};\n\n");
         
 // Dinamik Tip (OzDeger) Motoru - Aşama 1: Diziler ve Dinamik Değişkenler
         self.rust_kodu.push_str(r#"
@@ -255,6 +255,16 @@ impl Div for OzDeger {
     fn div(self, other: OzDeger) -> OzDeger {
         match (self, other) {
             (OzDeger::Sayi(a), OzDeger::Sayi(b)) if b != 0.0 => OzDeger::Sayi(a / b),
+            _ => OzDeger::Hic,
+        }
+    }
+}
+
+impl Rem for OzDeger {
+    type Output = OzDeger;
+    fn rem(self, other: OzDeger) -> OzDeger {
+        match (self, other) {
+            (OzDeger::Sayi(a), OzDeger::Sayi(b)) if b != 0.0 => OzDeger::Sayi(a % b),
             _ => OzDeger::Hic,
         }
     }
@@ -543,6 +553,7 @@ fn tip(args: Vec<OzDeger>) -> OzDeger {
                     Op::Carp => Ok(format!("({} * {})", sol_str, sag_str)),
                     Op::Bol => Ok(format!("({} / {})", sol_str, sag_str)),
                     Op::Esit => Ok(format!("if {} == {} {{ OzDeger::Dogru }} else {{ OzDeger::Yanlis }}", sol_str, sag_str)),
+                    Op::EsitDegil => Ok(format!("if {} != {} {{ OzDeger::Dogru }} else {{ OzDeger::Yanlis }}", sol_str, sag_str)),
                     Op::Kucuk => {
                         // Kucuk, Buyuk vs icin simdilik pattern match ile kiyaslama
                         Ok(format!("if let (OzDeger::Sayi(a), OzDeger::Sayi(b)) = ({}, {}) {{ if a < b {{ OzDeger::Dogru }} else {{ OzDeger::Yanlis }} }} else {{ OzDeger::Yanlis }}", sol_str, sag_str))
@@ -550,6 +561,15 @@ fn tip(args: Vec<OzDeger>) -> OzDeger {
                     Op::Buyuk => {
                         Ok(format!("if let (OzDeger::Sayi(a), OzDeger::Sayi(b)) = ({}, {}) {{ if a > b {{ OzDeger::Dogru }} else {{ OzDeger::Yanlis }} }} else {{ OzDeger::Yanlis }}", sol_str, sag_str))
                     }
+                    Op::KucukEsit => {
+                        Ok(format!("if let (OzDeger::Sayi(a), OzDeger::Sayi(b)) = ({}, {}) {{ if a <= b {{ OzDeger::Dogru }} else {{ OzDeger::Yanlis }} }} else {{ OzDeger::Yanlis }}", sol_str, sag_str))
+                    }
+                    Op::BuyukEsit => {
+                        Ok(format!("if let (OzDeger::Sayi(a), OzDeger::Sayi(b)) = ({}, {}) {{ if a >= b {{ OzDeger::Dogru }} else {{ OzDeger::Yanlis }} }} else {{ OzDeger::Yanlis }}", sol_str, sag_str))
+                    }
+                    Op::Mod => Ok(format!("{} % {}", sol_str, sag_str)),
+                    Op::Ve => Ok(format!("if {} == OzDeger::Dogru && {} == OzDeger::Dogru {{ OzDeger::Dogru }} else {{ OzDeger::Yanlis }}", sol_str, sag_str)),
+                    Op::Veya => Ok(format!("if {} == OzDeger::Dogru || {} == OzDeger::Dogru {{ OzDeger::Dogru }} else {{ OzDeger::Yanlis }}", sol_str, sag_str)),
                     _ => Err("Desteklenmeyen Op (Henuz)".into()),
                 }
             }

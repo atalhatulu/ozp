@@ -1,39 +1,59 @@
-# OZ+ Dili Geliştirme Yol Haritası (GELISTIRILECEKLER)
+# OZ+ (ozp) Derleyici — Geliştirme Yol Haritası
 
-Bu dosya, OZ+ programlama dilinin gelecekteki geliştirme adımlarını takip etmek için oluşturulmuştur. Yeni bir yapay zeka asistanı (veya geliştirici) projeye dahil olduğunda, kaldığı yerden devam edebilmesi için aşağıdaki görevleri okumalıdır.
+Bu dosya, **Rust tabanlı `ozc` derleyicisinin** (Lexer → Parser/AST → Codegen → rustc) gelecekteki geliştirme adımlarını takip eder.
 
-## 📌 Öncelikli Görevler (Aşama 1)
+> ⚠️ Geçmişte burada duran içerik, eski **C transpiler'ının** (`ozplus-lang`, `src/*.c`, `oz`, `oz-konsol`) yol haritasıydı ve yanlışlıkla bu repoya kopyalanmıştı. O içerik artık **yalnızca `legacy/` klasöründe**, ait olduğu C projesiyle birlikte durmaktadır.
 
-### 1. Kütüphane Sistemi (`dahil_et`)
-- **Durum:** Sözlük (lexer) olarak eklendi, ancak derleyici mantığı (parser/main.c) henüz yazılmadı.
-- **Görev:** `dahil_et "kutuphane.ozp"` yazıldığında, derleyicinin bu dosyanın içeriğini okuyup ana kodun içine gömmesi (Tıpkı C'deki `#include` gibi) sağlanmalı. Bu sayede modüler programlamaya geçilecek.
+Mimari:
 
-### 2. Gelişmiş Tip Çıkarımı (Advanced Type Inference)
-- **Durum:** `a = 5` (Sayı) veya `b = "Metin"` (Metin) otomatik algılanıyor. Ancak `sonuc = eger a > 5 : "dogru" , "yanlis"` gibi Ternary (Tek satır şart) operatörlerinde eşittirden sonra `eger` kelimesi geldiği için derleyici doğrudan `long` tahmini yapıyor.
-- **Görev:** `parser.c` içindeki tip tahmin algoritması iyileştirilmeli. Değişken atamalarında eşitliğin ilerisindeki kelimeler taranarak dönüş tipi (char*, double, long) daha akıllıca belirlenmeli.
+```text
+.ozp → Lexer → Parser (AST) → Codegen (Rust) → rustc -O → native executable
+```
 
-## 📦 Standart Kütüphaneler (Aşama 2)
-Çekirdek büyütülmeden, `dahil_et` özelliği kullanılarak OZ+ dilinin kendi standart kütüphaneleri (`.ozp` uzantılı) yazılmalıdır. C dilinin güçlü kütüphaneleri sarmalanarak (wrapper) oluşturulmalıdır:
+## 🟢 Tamamlanmış
 
-- [ ] **matematik.ozp:** `karekok()`, `kuvvet_al()`, `yuvarla()` işlevleri. (Arka planda C'nin `math.h` fonksiyonlarını çağıracak).
-- [ ] **zaman.ozp:** O anki saati alma, programı bekletme (`uyu()` / `sleep()`) işlevleri.
-- [ ] **dosya.ozp:** Metin dosyası okuma (`dosya_oku()`) ve dosyaya yazma (`dosyaya_yaz()`) işlevleri.
-- [ ] **ag.ozp (Network):** Basit HTTP istekleri atabilmek için ağ kütüphanesi.
+- [x] Lexer (Türkçe keyword: `islev`, `degisken`, `dongu`, `eger`, `sinif`, `her`, `icinde` …; string/sayı/yorum/id/operator/array-object/`->`/karşılaştırma)
+- [x] Parser → gerçek `Program(AST)` üretimi
+- [x] Operatör önceliği (precedence climbing: `2 + 3 * 4` → `2 + (3*4)`)
+- [x] Tüm ikili operatörlerin codegen'i (`+ - * / % == != < > <= >= ve veya`)
+- [x] `dahil_et` modül/flattening sistemi (HashSet ile tekrar yükleme önlemi)
+- [x] `sinif` / `yeni` / metot çağrısı (OOP, `OzDeger` map tabanlı)
+- [x] `dene` / `hata_yakala` / `hata_firlat` (try-catch, panic tabanlı)
+- [x] Diziler, sözlükler, `her ... icinde` döngüsü
+- [x] AOT native derleme (`rustc -O`), `--tokens` / `--ast` debug bayrakları
+- [x] Sembol tablosu (scope yığını)
+- [x] Unit testler (6)
 
-## 🚀 Çekirdek (Core) Sözdizimi Geliştirmeleri (Aşama 3)
+## 🟡 Kısmen tamamlanmış / Bilinen eksikler
 
-### 1. Akıllı Döngüler (`her` ve `icinde`)
-- **Durum:** Şu an sadece sonsuz `dongu` (while) var.
-- **Görev:** Python'daki `for x in liste:` yapısını getirmek için `her x icinde liste:` sözdizimi derleyiciye öğretilmeli. Dizilerin (Array) C tarafında Generic boyutlu hale getirilmesi gerekiyor.
+- **Hata yönetimi (parser):** `ifade_parse` bilinmeyen token'da `Ifade::Sayi(0.0)` döndürüyor → `degisken x = !!!` sessizce `0` olarak derleniyor. `Result<Ifade, CompileHata>` / gerçek hata mesajı + satır numarası hedeflenmeli.
+- **Type system:** `degisken` her zaman `Tip::TamSayi` olarak kaydediliyor; tip çıkarımı yok. `degisken isim = "Teha"` → `String` çıkarımı hedeflenmeli. Tipler `{TamSayi, Metin, Ondalik, Dizi, Sozluk}` ile sınırlı.
+- **`eger` (ternary) ifadesi:** parser'da `Komut::Eger` üretiyor ama codegen'de `Bos` (C sürümünden kalan yarım parça). Implementasyon bekliyor.
+- **`zaman` fonksiyonu:** `zaman_baslat` / `zaman_bitir` codegen'i `zaman(...)` çağırıyor ama bu fonksiyon üretilmiyor → `zaman` kullanan örnekler (`dongu_lokal`, `dongu_test`, `fibonacci`, `bilgi_yarismasi` …) rustc derleme hatası veriyor.
+- **`dizi` / `sozluk` statik tip:** `dizi sayilar = [1,2,3]` → `Array<Int>` / `Array<String>` jenerik tip çıkarımı yapılmıyor.
+- **`test_dahil_et.ozp`:** `dahil_et "matematik.ozp"` yolu ana dizine göre değil `examples/examples/...` olarak çözülüyor.
 
-### 2. Gelişmiş Hata Yakalama (Try-Catch)
-- **Durum:** `dene`, `hata_yakala`, `hata_firlat` kelimeleri tanımlı ancak C backend'inde %100 güvenli çalışmıyor.
-- **Görev:** C dilindeki `setjmp.h` kullanılarak veya C++ derleyicisine geçilerek try-catch bloklarının hatasız çalışması sağlanmalı.
+## 🔴 Gelecek (v0.2 → v1.0)
 
-### 3. Otomatik Bellek Yönetimi (Garbage Collection)
-- **Durum:** `yeni` komutuyla oluşturulan nesneler iş bitiminde C tarafında manuel `free()` edilmek zorunda kalınabilir veya bellek sızıntısı (memory leak) yaşanabilir.
-- **Görev:** Referans sayımı (Reference Counting) tabanlı basit bir çöp toplayıcı (GC) yazılmalı.
+ChatGPT proje incelemesinden sonra stratejik yol:
+
+1. **Feature freeze:** Yeni keyword / syntax eklemeden önce temeli sağlamlaştır.
+2. **Semantic Analyzer + Type System:** AST sonrası semantik doğrulama katmanı; tip çıkarımı; `Array<T>`, `Sozluk<K,V>`, `Function`, `Class`.
+3. **Gerçek hata raporlama:** Satır/sütun bazlı, panik yerine `Result` propagasyonu.
+4. **IR katmanı (opsiyonel/uzun vade):** AST bağımlılığını backend'den ayır:
+
+```text
+          ┌→ Rust (rustc)
+AST → HIR ┼→ LLVM / Cranelift
+          ├→ WASM
+          └→ Interpreter
+```
+
+> Şimdilik `OZ+ → Rust → rustc` kalıyor; `rustc` kullanmak yanlış değil. Ama AST/semantic seviyesi `rustc`'ye bağımlı olmamalı ki bir gün kendi backend'ine geçilebilsin.
+
+5. **Gerçek module system:** `dahil_et`'in dosya birleştirme (textual flattening) olmaktan çıkıp `module / import / export / private / public / namespace` düzenine evrilmesi.
+6. **LSP tam desteği:** Mevcut VS Code uzantısı (legacy C için) Rust `ozc`'ye uyarlanmalı.
 
 ---
 
-**Not:** OZ+ dilinin vizyonu "Python kadar okunaklı, C kadar hızlı ve Türkçe" bir dil yaratmaktır. Her yeni özellik eklenirken C derleyicisinin hızından ödün verilmemesine ve `oz-konsol` (REPL) uygulamasının bozulmamasına dikkat edilmelidir.
+*Geliştirici: teha & Antigravity (Google)*

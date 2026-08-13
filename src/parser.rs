@@ -66,39 +66,58 @@ impl Parser {
     //   sayı, metin, değişken, ikili işlem (satır sonuna kadar birleşik)
 
     fn ifade_parse(&mut self) -> Ifade {
-        // Satır içindeki bir ifadeyi toplar. Operatör önceliği şimdilik
-        // soldan-sağa; C sürümü de aynı şekilde davranıyordu.
+        // Operatör önceliğine saygılı ifade ayrıştırma (precedence climbing).
+        //   seviye 3: * / %
+        //   seviye 2: + -
+        //   seviye 1: < > <= >= == !=
+        //   seviye 0: ve veya
+        // `2 + 3 * 4` → `2 + (3 * 4)` üretilir (eski sürüm soldan-sağa
+        // bağlıyordu: `(2 + 3) * 4`).
+        self.binary_parse(0)
+    }
+
+    fn binary_parse(&mut self, min_oncesi: u8) -> Ifade {
         let mut lhs = self.terim_parse();
 
         loop {
-            let op = match self.peek().tip {
-                TokenTip::ARTI => Some(Op::Topla),
-                TokenTip::EKS => Some(Op::Cikar),
-                TokenTip::CARP => Some(Op::Carp),
-                TokenTip::BOL => Some(Op::Bol),
-                TokenTip::MOD => Some(Op::Mod),
-                TokenTip::ESIT_ESIT => Some(Op::Esit),
-                TokenTip::ESIT_DEGIL => Some(Op::EsitDegil),
-                TokenTip::KUCUK => Some(Op::Kucuk),
-                TokenTip::BUYUK => Some(Op::Buyuk),
-                TokenTip::KUCUK_ESIT => Some(Op::KucukEsit),
-                TokenTip::BUYUK_ESIT => Some(Op::BuyukEsit),
-                TokenTip::VE => Some(Op::Ve),
-                TokenTip::VEYA => Some(Op::Veya),
-                _ => None,
-            };
-
-            match op {
-                Some(op) => {
-                    self.atla();
-                    let sag = self.terim_parse();
-                    lhs = Ifade::Ikili { sol: Box::new(lhs), op, sag: Box::new(sag) };
-                }
+            let (oncesi, op) = match self.op_gorsin() {
+                Some(t) => t,
                 None => break,
+            };
+            if oncesi < min_oncesi {
+                break;
             }
+            self.atla();
+            let sag = self.binary_parse(oncesi + 1);
+            lhs = Ifade::Ikili { sol: Box::new(lhs), op, sag: Box::new(sag) };
         }
 
         lhs
+    }
+
+    // Geçerli token bir ikili operatörse öncelik seviyesi + operatör döndürür.
+    fn op_gorsin(&self) -> Option<(u8, Op)> {
+        let t = self.peek();
+        Some(match t.tip {
+            TokenTip::CARP | TokenTip::BOL | TokenTip::MOD => (3, match t.tip {
+                TokenTip::CARP => Op::Carp,
+                TokenTip::BOL => Op::Bol,
+                _ => Op::Mod,
+            }),
+            TokenTip::ARTI | TokenTip::EKS => (2, match t.tip {
+                TokenTip::ARTI => Op::Topla,
+                _ => Op::Cikar,
+            }),
+            TokenTip::KUCUK => (1, Op::Kucuk),
+            TokenTip::BUYUK => (1, Op::Buyuk),
+            TokenTip::KUCUK_ESIT => (1, Op::KucukEsit),
+            TokenTip::BUYUK_ESIT => (1, Op::BuyukEsit),
+            TokenTip::ESIT_ESIT => (1, Op::Esit),
+            TokenTip::ESIT_DEGIL => (1, Op::EsitDegil),
+            TokenTip::VE => (0, Op::Ve),
+            TokenTip::VEYA => (0, Op::Veya),
+            _ => return None,
+        })
     }
 
     fn terim_parse(&mut self) -> Ifade {
