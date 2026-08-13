@@ -6,6 +6,7 @@ mod lexer;
 mod parser;
 mod tokens;
 mod codegen;
+mod semantic;
 
 use std::fs;
 use std::io::{self, Write};
@@ -13,7 +14,22 @@ use std::io::{self, Write};
 const YARDIM: &str = "Kullanım: ozc [dosya.ozp]
   -h, --help    Bu yardımı göster
   --tokens      Sadece token listesini yazdır (debug)
-  --ast         Sadece AST'ı yazdır (debug)";
+  --ast         Sadece AST'ı yazdır (debug)
+  --check       Sadece semantic analiz yap, derleme yapma (debug)";
+
+/// Semantic analizi çalıştırır. Hata varsa listeler ve false döner.
+fn semantic_kontrol(program: &ast::Program) -> bool {
+    let hatalar = semantic::Semantik::yeni().analiz_et(program);
+    if hatalar.is_empty() {
+        println!("Semantik analiz: sorun yok.");
+        return true;
+    }
+    eprintln!("[OZ+ SEMANTIK HATASI] {} sorun bulundu:", hatalar.len());
+    for h in &hatalar {
+        eprintln!("  - {}", h.mesaj);
+    }
+    false
+}
 
 fn dosya_oku(yol: &str) -> Result<String, String> {
     fs::read_to_string(yol).map_err(|e| format!("Dosya okunamadı '{}': {}", yol, e))
@@ -34,6 +50,23 @@ fn ast_dok(yol: &str) -> Result<(), String> {
     let program = parser::parse(&dizi).map_err(|e| e.to_string())?;
     println!("{:#?}", program.komutlar);
     Ok(())
+}
+
+fn check_dok(yol: &str) -> Result<(), String> {
+    let kaynak = dosya_oku(yol)?;
+    let dizi = lexer::tokenize(&kaynak);
+    let mut program = parser::parse(&dizi).map_err(|e| e.to_string())?;
+    // dahil_et dosyalarını çözümle (modül fonksiyonları görünsün)
+    let ana_dizin = std::path::Path::new(yol)
+        .parent()
+        .unwrap_or(std::path::Path::new(""));
+    let mut yuklenenler = std::collections::HashSet::new();
+    cozumle_dahil_et(&mut program.komutlar, ana_dizin, &mut yuklenenler)?;
+    if semantic_kontrol(&program) {
+        Ok(())
+    } else {
+        Err("Semantik analizde hatalar var; derleme adımı atlandı.".into())
+    }
 }
 
 fn cozumle_dahil_et(komutlar: &mut Vec<ast::Komut>, ana_dizin: &std::path::Path, yuklenenler: &mut std::collections::HashSet<String>) -> Result<(), String> {
@@ -93,6 +126,16 @@ fn derle_ve_calistir(yol: &str) -> Result<(), String> {
     let ana_dizin = std::path::Path::new(yol).parent().unwrap_or(std::path::Path::new(""));
     let mut yuklenenler = std::collections::HashSet::new();
     cozumle_dahil_et(&mut program.komutlar, ana_dizin, &mut yuklenenler)?;
+
+    println!("[2.5/4] Semantik Analiz ediliyor...");
+    let sem_hatalar = semantic::Semantik::yeni().analiz_et(&program);
+    if !sem_hatalar.is_empty() {
+        eprintln!("[OZ+ SEMANTIK HATASI] {} sorun bulundu:", sem_hatalar.len());
+        for h in &sem_hatalar {
+            eprintln!("  - {}", h.mesaj);
+        }
+        return Err(format!("Semantik analiz {} hata ile bitti; derleme iptal edildi.", sem_hatalar.len()));
+    }
 
     println!("[3/4] Hedef Makine Diline (AOT) Çevriliyor...");
     let mut t = codegen::Transpiler::yeni();
@@ -196,6 +239,7 @@ fn main() {
     let sonuc = match args.get(1).map(String::as_str) {
         Some("--tokens") => args.get(2).map(|s| token_dok(s)).unwrap_or(Err("Dosya yolu gerekli".into())),
         Some("--ast") => args.get(2).map(|s| ast_dok(s)).unwrap_or(Err("Dosya yolu gerekli".into())),
+        Some("--check") => args.get(2).map(|s| check_dok(s)).unwrap_or(Err("Dosya yolu gerekli".into())),
         _ => derle_ve_calistir(arg),
     };
 

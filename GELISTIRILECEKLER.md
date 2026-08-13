@@ -7,7 +7,7 @@ Bu dosya, **Rust tabanlı `ozc` derleyicisinin** (Lexer → Parser/AST → Codeg
 Mimari:
 
 ```text
-.ozp → Lexer → Parser (AST) → Codegen (Rust) → rustc -O → native executable
+.ozp → Lexer → Parser (AST) → Semantic (doğrulama) → Codegen (Rust) → rustc -O → native executable
 ```
 
 ## 🟢 Tamamlanmış
@@ -16,20 +16,20 @@ Mimari:
 - [x] Parser → gerçek `Program(AST)` üretimi
 - [x] Operatör önceliği (precedence climbing: `2 + 3 * 4` → `2 + (3*4)`)
 - [x] Tüm ikili operatörlerin codegen'i (`+ - * / % == != < > <= >= ve veya`)
+- [x] **Semantic Analyzer** (`src/semantic.rs`): sembol çözümleme (tanımsız değişken/fonksiyon), scope analizi (blok), tip çıkarımı, atama tip kontrolü (`degisken x = 10; x = "metin"` → hata), `kir`/`devam_et`/`don` scope doğrulaması. `--check` bayrağı ile derleme yapmadan çalışır.
 - [x] `dahil_et` modül/flattening sistemi (HashSet ile tekrar yükleme önlemi)
 - [x] `sinif` / `yeni` / metot çağrısı (OOP, `OzDeger` map tabanlı)
 - [x] `dene` / `hata_yakala` / `hata_firlat` (try-catch, panic tabanlı)
 - [x] Diziler, sözlükler, `her ... icinde` döngüsü
-- [x] AOT native derleme (`rustc -O`), `--tokens` / `--ast` debug bayrakları
+- [x] AOT native derleme (`rustc -O`), `--tokens` / `--ast` / `--check` debug bayrakları
 - [x] Sembol tablosu (scope yığını)
-- [x] Unit testler (6)
+- [x] Unit testler (13: lexer 3, parser 3, semantic 7)
 
 ## 🟡 Kısmen tamamlanmış / Bilinen eksikler
 
 - **Hata yönetimi (parser):** `ifade_parse` bilinmeyen token'da `Ifade::Sayi(0.0)` döndürüyor → `degisken x = !!!` sessizce `0` olarak derleniyor. `Result<Ifade, CompileHata>` / gerçek hata mesajı + satır numarası hedeflenmeli.
-- **Type system:** `degisken` her zaman `Tip::TamSayi` olarak kaydediliyor; tip çıkarımı yok. `degisken isim = "Teha"` → `String` çıkarımı hedeflenmeli. Tipler `{TamSayi, Metin, Ondalik, Dizi, Sozluk}` ile sınırlı.
+- **Type system (derinleştirme):** Semantic tip çıkarımı ve atama kontrolü eklendi, ancak `degisken` ile `metin`/`ondalik` deklarasyonları parser'da hâlâ ayrı işleniyor; jenerik `Array<T>` / `Sozluk<K,V>` ve fonksiyon imza/return tipi doğrulaması eksik. Semantic hatayı satır bilgisiyle veriyor ama satır numarası henüz AST'den gelmiyor (`satir: 0`).
 - **`eger` (ternary) ifadesi:** parser'da `Komut::Eger` üretiyor ama codegen'de `Bos` (C sürümünden kalan yarım parça). Implementasyon bekliyor.
-- **`zaman` fonksiyonu:** `zaman_baslat` / `zaman_bitir` codegen'i `zaman(...)` çağırıyor ama bu fonksiyon üretilmiyor → `zaman` kullanan örnekler (`dongu_lokal`, `dongu_test`, `fibonacci`, `bilgi_yarismasi` …) rustc derleme hatası veriyor.
 - **`dizi` / `sozluk` statik tip:** `dizi sayilar = [1,2,3]` → `Array<Int>` / `Array<String>` jenerik tip çıkarımı yapılmıyor.
 - **`test_dahil_et.ozp`:** `dahil_et "matematik.ozp"` yolu ana dizine göre değil `examples/examples/...` olarak çözülüyor.
 
@@ -37,8 +37,8 @@ Mimari:
 
 ChatGPT proje incelemesinden sonra stratejik yol:
 
-1. **Feature freeze:** Yeni keyword / syntax eklemeden önce temeli sağlamlaştır.
-2. **Semantic Analyzer + Type System:** AST sonrası semantik doğrulama katmanı; tip çıkarımı; `Array<T>`, `Sozluk<K,V>`, `Function`, `Class`.
+1. **Feature freeze:** Yeni keyword / syntax eklemeden önce temeli sağlamlaştır. ✅
+2. **Semantic Analyzer + Type System:** ✅ Tamamlandı (`src/semantic.rs`) — sembol çözümleme, scope analizi, tip çıkarımı, atama tip kontrolü, `kir`/`devam_et`/`don` scope doğrulaması. Sıradaki derinleştirme: fonksiyon imza/return tipi doğrulaması, jenerik `Array<T>`/`Sozluk<K,V>`, satır bazlı diagnostics.
 3. **Gerçek hata raporlama:** Satır/sütun bazlı, panik yerine `Result` propagasyonu.
 4. **IR katmanı (opsiyonel/uzun vade):** AST bağımlılığını backend'den ayır:
 
