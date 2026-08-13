@@ -311,6 +311,14 @@ fn tip(args: Vec<OzDeger>) -> OzDeger {
         OzDeger::Hic
     }
 }
+
+fn zaman(_args: Vec<OzDeger>) -> OzDeger {
+    let nanos = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map(|d| d.as_secs_f64())
+        .unwrap_or(0.0);
+    OzDeger::Sayi(nanos)
+}
 "#);
         
         self.rust_kodu.push_str("\nfn main() {\n");
@@ -465,6 +473,15 @@ fn tip(args: Vec<OzDeger>) -> OzDeger {
                 let ifade_str = self.ifade_oku(ifade)?;
                 self.rust_kodu.push_str(&format!("{}std::panic::panic_any({});\n", sekme, ifade_str));
             }
+            Komut::ZamanBaslat => {
+                self.rust_kodu.push_str(&format!("{}let _oz_zaman = std::time::Instant::now();\n", sekme));
+            }
+            Komut::ZamanBitir => {
+                self.rust_kodu.push_str(&format!(
+                    "{}println!(\"Oz Zamanlayici: {{:?}}\", _oz_zaman.elapsed().as_secs_f64());\n",
+                    sekme
+                ));
+            }
             Komut::Sinif { isim, govde } => {
                 // Sınıf inşa edici fonksiyonu (Constructor)
                 self.rust_kodu.push_str(&format!("{}fn __sinif_yeni_{}() -> OzDeger {{\n", sekme, isim));
@@ -580,7 +597,7 @@ fn tip(args: Vec<OzDeger>) -> OzDeger {
                         args.push(self.ifade_oku(a)?);
                     }
                     Ok(format!("println!(\"{{}}\", {})", args.join(" + ")))
-                } else if isim == "dosya_oku" || isim == "dosya_yaz" || isim == "rastgele" || isim == "tip" {
+                } else if isim == "dosya_oku" || isim == "dosya_yaz" || isim == "rastgele" || isim == "tip" || isim == "zaman" {
                     let mut args = Vec::new();
                     for a in argumanlar {
                         args.push(self.ifade_oku(a)?);
