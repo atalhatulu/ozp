@@ -27,7 +27,7 @@
 - [ ] **Tip çıkarımı:** `degisken isim = "Teha"` → `Metin`, `degisken x = 42` → `TamSayi`. Tipler: `Int, Float, String, Bool, Array<T>, Sozluk<K,V>, Function, Class, Object, Void`.
 - [ ] **Jenerik dizi/sözlük:** `dizi sayilar = [1,2,3]` → `Array<Int>`.
 - [ ] **`eger` (ternary)** ifadesinin codegen'i tamamlanmalı.
-- [ ] **Scope bug'ları (pre-existing):** `bilgi_yarismasi`, `cop_toplayici`, `sinif_testi`, `test_kovan`, `hesap_makinesi`, `sozluk_ve_hata`, `rehber_uygulamasi` örnekleri `degisken bulunamadı` / `fonksiyon bulunamadı` (E0425) hataları veriyor. Değişken kapsamı ve ön-tanımlı fonksiyon çözümlemesi güçlendirilmeli.
+- [ ] **Eski C stdlib örnekleri (pre-existing):** `bilgi_yarismasi`, `cop_toplayici`, `sinif_testi`, `test_kovan`, `hesap_makinesi`, `sozluk_ve_hata`, `rehber_uygulamasi` — `sozluk_olustur` / `sozluk_ekle` / `_oz_son_hata_mesaji` gibi **eski `ozplus-lang` C stdlib API'sine** dayanıyor; Rust transpiler'da bu fonksiyonlar yok → `degisken/fonksiyon bulunamadı` (E0425). Bu örneklerin Rust `OzDeger` API'sine taşınması gerekiyor.
 
 ### Katman 2 — Mimari (v0.3)
 - [ ] Semantic Analyzer katmanı (AST sonrası doğrulama)
